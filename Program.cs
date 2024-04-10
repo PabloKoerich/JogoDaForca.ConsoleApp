@@ -1,22 +1,33 @@
-﻿using System;
-
-namespace JogoDaForca.ConsoleApp
+﻿namespace JogoDaForca.ConsoleApp
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            while (true)
+            Forca forca = new Forca();
+
+            forca.GerarPalavra();
+            forca.GerarPalavraMascarada();
+
+            bool jogadorAcertou = false;
+
+            while (jogadorAcertou == false && forca.JogadorPerdeu() == false)
             {
-                string palavraSelecionada;
-                char[] palavraMascarada;
-                int tentativas = 0;
+                Console.WriteLine("Jogo da Forca | Academia de Programação!\n");
 
-                geradorPalavra(out palavraSelecionada, out palavraMascarada);
-                mostraLetra(palavraSelecionada, palavraMascarada, ref tentativas);
+                geraForca(forca.quantidadeErros);
 
-                if (jogarNovamente()) break;
+                Console.WriteLine($"\n\nA palavra escondida é: {string.Join(" ", forca.palavraMascarada)}\n");
 
+                char letraDigitada = obterValor<char>("Digite uma letra: ").ToString().ToUpper()[0];
+
+                jogadorAcertou = forca.PalpiteCorreto(letraDigitada);
+
+                if (jogadorAcertou)
+                    Console.WriteLine("Você acertou!");
+
+                else if (forca.JogadorPerdeu())
+                    Console.WriteLine("Você perdeu!");
             }
         }
 
@@ -69,13 +80,16 @@ namespace JogoDaForca.ConsoleApp
         private static void geradorPalavra(out string palavraSelecionada, out char[] palavraMascarada)
         {
             Random randomizador = new Random();
+
             string[] palavras = {"ABACATE", "ABACAXI", "ACEROLA", "ACAI", "ARACA", "BACABA", "BACURI",
                         "BANANA", "CAJA", "CAJU", "CARAMBOLA", "CUPUACU", "GRAVIOLA", "GOIABA", "JABUTICABA",
                         "JENIPAPO", "MACA", "MANGABA", "MANGA", "MARACUJA", "MURICI", "PEQUI", "PITANGA",
                         "PITAYA", "SAPOTI", "TANGERINA", "UMBU", "UVA", "UVAIA"};
 
             int indicePalavraSelecionada = randomizador.Next(palavras.Length);
+
             palavraSelecionada = palavras[indicePalavraSelecionada];
+
             palavraMascarada = new string('_', palavraSelecionada.Length).ToCharArray();
         }
 
@@ -109,10 +123,12 @@ namespace JogoDaForca.ConsoleApp
         static bool jogarNovamente()
         {
             Console.WriteLine("Deseja Continuar? (S / N)");
-            string resposta = Console.ReadLine().ToUpper();
-            Console.Clear();
-            return resposta == "N";
 
+            string resposta = Console.ReadLine().ToUpper();
+
+            Console.Clear();
+
+            return resposta == "N";
 
         }
 
